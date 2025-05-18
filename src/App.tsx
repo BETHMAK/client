@@ -18,114 +18,142 @@ import DocumentVerification from './components/Documents/DocumentVerification';
 
 // Protected Route component
 interface ProtectedRouteProps {
-    children: React.ReactNode;
-    role?: 'admin' | 'applicant';
+  children: React.ReactNode;
+  role?: 'admin' | 'applicant';
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, role }) => {
-    const { user } = useSelector((state: RootState) => state.auth);
-    
-    if (!user) {
-        return <Navigate to="/login" />;
-    }
+  const { user } = useSelector((state: RootState) => state.auth);
 
-    if (role && user.role !== role) {
-        return <Navigate to="/dashboard" />;
-    }
-    
-    return <>{children}</>;
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  if (role && user.role !== role) {
+    return <Navigate to="/dashboard" />;
+  }
+
+  return <>{children}</>;
 };
 
 const App = () => {
-    const { user } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
 
-    return (
-        <Router>
-            <Layout>
-                <Routes>
-                    {/* Public Routes */}
-                    <Route path="/login" element={
-                        user ? <Navigate to="/dashboard" /> : <Login />
-                    } />
-                    <Route path="/register" element={
-                        user ? <Navigate to="/dashboard" /> : <Register />
-                    } />
-                    
-                    {/* Dashboard Routes */}
-                    <Route path="/dashboard" element={
-                        <ProtectedRoute>
-                            {user?.role === 'admin' ? <AdminDashboard /> : <ApplicantDashboard />}
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Program Routes */}
-                    <Route path="/programs" element={
-                        <ProtectedRoute>
-                            <ProgramList />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/admin/programs" element={
-                        <ProtectedRoute role="admin">
-                            <AdminProgramList />
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Application Routes */}
-                    <Route path="/applications" element={
-                        <ProtectedRoute>
-                            {user?.role === 'admin' ? <AdminApplicationsList /> : <ApplicationsList />}
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/admin/applications" element={
-                        <ProtectedRoute role="admin">
-                            <AdminApplicationsList />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/applications/new" element={
-                        <ProtectedRoute>
-                            <ApplicationForm />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/applications/:applicationId/review" element={
-                        <ProtectedRoute role="admin">
-                            <ApplicationReview />
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Document Routes */}
-                    <Route path="/documents" element={
-                        <ProtectedRoute>
-                            {user?.role === 'admin' ? 
-                                <DocumentsPage isAdmin={true} /> : 
-                                <DocumentsPage />
-                            }
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/documents/:documentId/verify" element={
-                        <ProtectedRoute role="admin">
-                            <DocumentVerification />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/applications/:applicationId/documents" element={
-                        <ProtectedRoute role="applicant">
-                            <DocumentsPage />
-                        </ProtectedRoute>
-                    } />
-                    
-                    {/* Default Route */}
-                    <Route path="/" element={<Navigate to="/dashboard" />} />
-                    
-                    {/* 404 Route */}
-                    <Route path="*" element={
-                        <div>
-                            <h1>404: Page Not Found</h1>
-                            <p>The page you are looking for does not exist.</p>
-                        </div>
-                    } />
-                </Routes>
-            </Layout>
-        </Router>
-    );
+  return (
+    <Router>
+      <Layout>
+        <Routes>
+          {/* Public Routes */}
+          <Route
+            path="/login"
+            element={user ? <Navigate to="/dashboard" /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={user ? <Navigate to="/dashboard" /> : <Register />}
+          />
+
+          {/* Dashboard Routes */}
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                {user?.role === 'admin' ? <AdminDashboard /> : <ApplicantDashboard />}
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Program Routes */}
+          <Route
+            path="/programs"
+            element={
+              <ProtectedRoute role="applicant">
+                <ProgramList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/programs"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminProgramList />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Application Routes */}
+          <Route
+            path="/applications"
+            element={
+              <ProtectedRoute>
+                {user?.role === 'admin' ? (
+                  <AdminApplicationsList />
+                ) : (
+                  <ApplicationsList />
+                )}
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/new"
+            element={
+              <ProtectedRoute role="applicant">
+                <ApplicationForm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/:applicationId/review"
+            element={
+              <ProtectedRoute role="admin">
+                <ApplicationReview />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Document Routes */}
+          <Route
+            path="/documents"
+            element={
+              <ProtectedRoute>
+                <DocumentsPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents/:documentId/verify"
+            element={
+              <ProtectedRoute role="admin">
+                <DocumentVerification />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/applications/:applicationId/documents"
+            element={
+              <ProtectedRoute role="applicant">
+                <DocumentsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Default Route */}
+          <Route path="/" element={<Navigate to="/dashboard" />} />
+
+          {/* 404 Route */}
+          <Route
+            path="*"
+            element={
+              <div>
+                <h1>404: Page Not Found</h1>
+                <p>The page you are looking for does not exist.</p>
+              </div>
+            }
+          />
+        </Routes>
+      </Layout>
+    </Router>
+  );
 };
 
 export default App;

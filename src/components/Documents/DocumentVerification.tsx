@@ -114,8 +114,8 @@ const StatusChip = ({ status }: { status: string }) => {
   switch (status) {
     case 'pending':
       return <Chip label="Pending" color="warning" />;
-    case 'approved':
-      return <Chip label="Approved" color="success" icon={<CheckCircleIcon />} />;
+    case 'verified':
+      return <Chip label="verified" color="success" icon={<CheckCircleIcon />} />;
     case 'rejected':
       return <Chip label="Rejected" color="error" icon={<CancelIcon />} />;
     default:
@@ -130,7 +130,7 @@ const DocumentVerification = () => {
   const dispatch = useAppDispatch();
 
   // Local state
-  const [verificationStatus, setVerificationStatus] = useState<'approved' | 'rejected' | ''>('');
+  const [verificationStatus, setVerificationStatus] = useState<'verified' | 'rejected' | ''>('');
   const [verificationComment, setVerificationComment] = useState('');
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [notification, setNotification] = useState<{
@@ -151,13 +151,14 @@ const DocumentVerification = () => {
   // Fetch document on component mount
   useEffect(() => {
     if (documentId) {
+      // Use the API_URL constant for consistency
       dispatch(fetchDocumentById(documentId));
     }
   }, [dispatch, documentId]);
 
   // Handle status change
   const handleStatusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVerificationStatus(event.target.value as 'approved' | 'rejected');
+    setVerificationStatus(event.target.value as 'verified' | 'rejected');
   };
 
   // Handle comment change
@@ -193,7 +194,7 @@ const DocumentVerification = () => {
       .then(() => {
         setNotification({
           open: true,
-          message: `Document ${verificationStatus === 'approved' ? 'approved' : 'rejected'} successfully`,
+          message: `Document ${verificationStatus === 'verified' ? 'verified' : 'rejected'} successfully`,
           type: 'success',
         });
         // Reset form
@@ -316,9 +317,9 @@ const DocumentVerification = () => {
                   onChange={handleStatusChange}
                 >
                   <FormControlLabel
-                    value="approved"
+                    value="verified"
                     control={<Radio color="success" />}
-                    label="Approve Document"
+                    label="verified Document"
                   />
                   <FormControlLabel
                     value="rejected"
@@ -342,14 +343,14 @@ const DocumentVerification = () => {
 
               <Button
                 variant="contained"
-                color={verificationStatus === 'approved' ? 'success' : verificationStatus === 'rejected' ? 'error' : 'primary'}
+                color={verificationStatus === 'verified' ? 'success' : verificationStatus === 'rejected' ? 'error' : 'primary'}
                 disabled={!verificationStatus}
                 onClick={handleVerify}
                 sx={{ mt: 2 }}
                 fullWidth
               >
-                {verificationStatus === 'approved'
-                  ? 'Approve Document'
+                {verificationStatus === 'verified'
+                  ? 'Verify Document'
                   : verificationStatus === 'rejected'
                   ? 'Reject Document'
                   : 'Verify Document'}

@@ -29,7 +29,7 @@ const ApplicantDashboard = () => {
         const stats = {
             total: documents.length,
             pending: documents.filter(doc => doc.status === 'pending').length,
-            approved: documents.filter(doc => doc.status === 'approved').length,
+            approved: documents.filter(doc => doc.status === 'verified').length,
             rejected: documents.filter(doc => doc.status === 'rejected').length
         };
         setDocumentStatus(stats);

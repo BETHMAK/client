@@ -139,7 +139,7 @@ const StatusChip: React.FC<{ status: string }> = ({ status }) => {
       color = 'warning';
       icon = <PendingIcon fontSize="small" />;
       break;
-    case 'approved':
+    case 'verified':
       color = 'success';
       icon = <CheckCircleIcon fontSize="small" />;
       break;

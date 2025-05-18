@@ -159,7 +159,7 @@ const ApplicationReview = () => {
 
   // Check document verification status
   const allDocumentsVerified = applicationDocuments.length > 0 && 
-    applicationDocuments.every(doc => doc.status === 'approved');
+    applicationDocuments.every(doc => doc.status === 'verified');
   
   const hasRejectedDocuments = applicationDocuments.some(doc => doc.status === 'rejected');
 

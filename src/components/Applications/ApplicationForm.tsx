@@ -152,65 +152,86 @@ const ApplicationForm = () => {
         navigate('/programs');
     };
 
-    const uploadDocuments = async (applicationId: string): Promise<boolean> => {
-        if (selectedFiles.length === 0) {
-            return true;
-        }
+// Add proper type for upload result
+interface UploadResult {
+    documents?: Array<{ id: string }>;
+    message?: string;
+}
 
-        try {
-            if (selectedFiles.length === 1) {
-                const result = await dispatch(uploadDocument({
-                    file: selectedFiles[0],
-                    applicationId
-                })).unwrap();
-                
-                setNotification({
-                    open: true,
-                    message: 'Document uploaded successfully',
-                    type: 'success'
-                });
-                
-                return true;
-            } else {
-                const result = await dispatch(uploadMultipleDocuments({
-                    files: selectedFiles,
-                    applicationId
-                })).unwrap();
-                
-                setNotification({
-                    open: true,
-                    message: `${selectedFiles.length} documents uploaded successfully`,
-                    type: 'success'
-                });
-                
-                return true;
-            }
-        } catch (err: any) {
-            console.error('Error uploading documents:', err);
+const uploadDocuments = async (applicationId: string): Promise<boolean> => {
+    if (selectedFiles.length === 0) {
+        return true;
+    }
+
+    try {
+        if (selectedFiles.length === 1) {
+            // Single file upload
+            const result = await dispatch(uploadDocument({
+                file: selectedFiles[0],
+                applicationId
+            })).unwrap();
+            
             setNotification({
                 open: true,
-                message: `Failed to upload documents: ${err.message || 'Unknown error'}`,
-                type: 'error'
+                message: 'Document uploaded successfully',
+                type: 'success'
             });
-            return false;
+            
+            return !!result;
+        } else {
+            // Multiple files upload
+            const result = await dispatch(uploadMultipleDocuments({
+                files: selectedFiles,
+                applicationId
+            })).unwrap() as UploadResult;
+            
+            // Show success message with count of uploaded files
+            const uploadedCount = result.documents?.length || 0;
+            const failedCount = selectedFiles.length - uploadedCount;
+            
+            let message = `${uploadedCount} documents uploaded successfully`;
+            let notificationType: AlertColor = 'success';
+            
+            if (failedCount > 0) {
+                message += `. ${failedCount} failed to upload.`;
+                notificationType = 'warning';
+            }
+            
+            setNotification({
+                open: true,
+                message,
+                type: notificationType
+            });
+            
+            // Consider upload successful if at least one file was uploaded
+            return uploadedCount > 0;
         }
-    };
+    } catch (error: any) {
+        console.error('Document upload failed:', error);
+        setNotification({
+            open: true,
+            message: 'Failed to upload documents. You can try uploading them later.',
+            type: 'error'
+        });
+        return false;
+    }
+};
 
-    const validateForm = (): boolean => {
-        // Validate statement of purpose is not empty
-        if (!statement.trim()) {
-            setError('Statement of Purpose is required.');
-            return false;
-        }
-        
-        // Validate statement has a minimum length
-        if (statement.trim().length < 50) {
-            setError('Statement of Purpose should be at least 50 characters.');
-            return false;
-        }
-        
-        return true;
-    };
+const validateForm = (): boolean => {
+    // Validate statement of purpose is not empty
+    if (!statement.trim()) {
+        setError('Statement of Purpose is required.');
+        return false;
+    }
+    
+    // Validate statement has a minimum length
+    if (statement.trim().length < 50) {
+        setError('Statement of Purpose should be at least 50 characters.');
+        return false;
+    }
+    
+    return true;
+};
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();

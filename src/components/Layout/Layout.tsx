@@ -29,7 +29,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                             color: 'inherit'
                         }}
                     >
-                        University App
+                        B3THMAK APPLICATION
                     </Typography>
                     {user ? (
                         <>

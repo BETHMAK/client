@@ -10,7 +10,7 @@ export interface Document {
   size: number;
   uploadDate: string;
   applicationId: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'verified' | 'rejected';
 }
 
 // Response type interfaces
@@ -204,7 +204,7 @@ export const deleteDocument = createAsyncThunk<
 // Interface for document status update data
 export interface DocumentStatusUpdateData {
   id: string;
-  status: 'pending' | 'approved' | 'rejected';
+  status: 'pending' | 'verified' | 'rejected';
   comment?: string;
 }
 
